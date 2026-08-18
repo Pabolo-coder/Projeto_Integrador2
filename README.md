@@ -5,11 +5,11 @@ Projeto_Integrador2
 **Repositório para a etapa 1**
 
 
-## EcoLastro — Rastreamento Digital de Resíduos Recicláveis
+## EcoLastro CTBJ — Rastreamento Digital de Resíduos Recicláveis CTBJ
 
 ###  Descrição
 
-Plataforma que rastreia o ciclo de vida de resíduos recicláveis, desde a coleta até a reciclagem final, gerando um passaporte digital para cada lote coletado.
+Plataforma que rastreia o ciclo de vida de resíduos recicláveis, desde a coleta até a reciclagem final, gerando um passaporte digital para cada lote coletado para tornar o Colégio Técnico de Bom Jesus um local mais agradável e sustentável para todos.
 
 ###  Problema
 
