@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoLastro CTBJ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F6F1E3;
+    --paper-card: #EFE6CF;
+    --paper-card-2: #E7DBBC;
+    --ink: #23301F;
+    --ink-soft: #4C5A45;
+    --forest: #2E4B30;
+    --forest-dark: #1D3320;
+    --forest-tint: #DCE6D3;
+    --rust: #BE6430;
+    --rust-tint: #F1DAC6;
+    --mustard: #D89B34;
+    --mustard-tint: #F4E3BE;
+    --line: rgba(35, 48, 31, 0.16);
+    --danger: #A8432B;
+    --danger-tint: #F3DCD3;
+    --shadow: 0 1px 0 rgba(35,48,31,0.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #16201A;
+      --paper-card: #1E2B22;
+      --paper-card-2: #263426;
+      --ink: #EAE6D8;
+      --ink-soft: #B7C2AE;
+      --forest: #7FAE7F;
+      --forest-dark: #A6CBA1;
+      --forest-tint: #26382A;
+      --rust: #E2925C;
+      --rust-tint: #3A2A22;
+      --mustard: #E8BE6E;
+      --mustard-tint: #3A3323;
+      --line: rgba(234,230,216,0.14);
+      --danger-tint: #3A2622;
+      --shadow: 0 1px 0 rgba(0,0,0,0.2);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #16201A;
+    --paper-card: #1E2B22;
+    --paper-card-2: #263426;
+    --ink: #EAE6D8;
+    --ink-soft: #B7C2AE;
+    --forest: #7FAE7F;
+    --forest-dark: #A6CBA1;
+    --forest-tint: #26382A;
+    --rust: #E2925C;
+    --rust-tint: #3A2A22;
+    --mustard: #E8BE6E;
+    --mustard-tint: #3A3323;
+    --line: rgba(234,230,216,0.14);
+    --danger-tint: #3A2622;
+    --shadow: 0 1px 0 rgba(0,0,0,0.2);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, .display {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin: 0;
+  }
+  button { font-family: inherit; cursor: pointer; }
+  input, select { font-family: inherit; }
+  a { color: inherit; }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+
+  .app { min-height: 100vh; }
+  .hidden { display: none !important; }
+
+  /* ---------- Offline banner (RNF02) ---------- */
+  #offline-banner {
+    display: none;
+    position: sticky; top: 0; z-index: 50;
+    background: var(--danger); color: #FBEDE6;
+    text-align: center; font-size: 13px; font-weight: 600;
+    padding: 8px 12px;
+  }
+  #offline-banner.show { display: block; }
+
+  /* ---------- Auth screen ---------- */
+  #view-auth {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+  }
+  .auth-shell {
+    width: 100%;
+    max-width: 940px;
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    background: var(--paper-card);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 24px 60px -30px rgba(23,32,19,0.35);
+  }
+  @media (max-width: 760px) {
+    .auth-shell { grid-template-columns: 1fr; }
+    .auth-side { display: none; }
+  }
+  .auth-side {
+    background:
+      radial-gradient(120% 140% at 15% 10%, rgba(255,255,255,0.12), transparent 45%),
+      linear-gradient(165deg, var(--forest) 0%, var(--forest-dark) 100%);
+    color: #F3EEDC;
+    padding: 44px 38px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .auth-mark { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; }
+  .auth-mark .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--mustard); }
+  .auth-side h1 { color: #F3EEDC; font-size: 33px; line-height: 1.15; margin-top: 26px; }
+  .auth-side p.sub { color: rgba(243,238,220,0.78); font-size: 14.5px; line-height: 1.6; margin-top: 14px; max-width: 34ch; }
+  .chain {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+  }
+  .chain span {
+    font-size: 12.5px;
+    padding: 6px 11px;
+    border-radius: 100px;
+    background: rgba(243,238,220,0.12);
+    border: 1px solid rgba(243,238,220,0.22);
+  }
+  .chain .arrow { color: rgba(243,238,220,0.5); font-size: 13px; }
+  .auth-quote {
+    font-size: 13px;
+    color: rgba(243,238,220,0.65);
+    border-top: 1px solid rgba(243,238,220,0.18);
+    padding-top: 14px;
+    line-height: 1.55;
+  }
+
+  .auth-form-wrap { padding: 36px 40px; display: flex; flex-direction: column; max-height: 100vh; overflow-y: auto; }
+  .tabs { display: flex; gap: 4px; background: var(--paper-card-2); padding: 4px; border-radius: 12px; margin-bottom: 22px; }
+  .tab-btn {
+    flex: 1; border: none; background: transparent; padding: 9px 12px;
+    border-radius: 9px; font-size: 14px; font-weight: 600; color: var(--ink-soft);
+    transition: background .15s ease, color .15s ease;
+  }
+  .tab-btn.active { background: var(--paper); color: var(--forest-dark); box-shadow: var(--shadow); }
+
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12.5px; font-weight: 600; color: var(--ink-soft); margin-bottom: 6px; }
+  .field input, .field select {
+    width: 100%; padding: 11px 13px; border-radius: 10px;
+    border: 1px solid var(--line); background: var(--paper);
+    color: var(--ink); font-size: 14.5px;
+  }
+  .field input:focus, .field select:focus, button:focus-visible, .tab-btn:focus-visible, .navlink:focus-visible {
+    outline: 2px solid var(--forest-dark); outline-offset: 2px;
+  }
+  .pw-wrap { position: relative; }
+  .pw-wrap input { padding-right: 66px; }
+  .pw-toggle {
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    background: transparent; border: none; font-size: 11.5px; font-weight: 700;
+    color: var(--forest-dark); padding: 6px 8px;
+  }
+  .field-hint { font-size: 11.5px; color: var(--ink-soft); margin-top: 5px; }
+  .profile-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .profile-opt {
+    border: 1px solid var(--line); background: var(--paper); border-radius: 10px;
+    padding: 10px 6px; text-align: center; font-size: 12.5px; font-weight: 600; color: var(--ink-soft);
+  }
+  .profile-opt.selected { border-color: var(--forest); background: var(--forest-tint); color: var(--forest-dark); }
+
+  .btn-primary {
+    width: 100%; padding: 12px; border: none; border-radius: 10px;
+    background: var(--forest); color: #F3EEDC; font-weight: 700; font-size: 14.5px;
+    margin-top: 6px;
+  }
+  .btn-primary:hover { background: var(--forest-dark); }
+  .form-note { font-size: 12.5px; color: var(--ink-soft); margin-top: 12px; text-align: center; }
+  .form-error { font-size: 12.5px; color: var(--danger); margin: -6px 0 12px; min-height: 1em; }
+  .security-note {
+    display: flex; gap: 8px; align-items: flex-start; margin-top: 16px;
+    padding: 10px 12px; background: var(--paper-card-2); border-radius: 10px;
+    font-size: 11.5px; color: var(--ink-soft); line-height: 1.5;
+  }
+
+  /* ---------- App shell ---------- */
+  #view-app { display: none; min-height: 100vh; grid-template-columns: 240px 1fr; }
+  #view-app.show { display: grid; }
+  @media (max-width: 900px) {
+    #view-app.show { grid-template-columns: 1fr; }
+    .sidebar { position: sticky; top: 0; z-index: 5; }
+  }
+  .sidebar {
+    background: var(--paper-card);
+    border-right: 1px solid var(--line);
+    padding: 22px 16px;
+    display: flex; flex-direction: column;
+  }
+  @media (max-width: 900px) {
+    .sidebar { border-right: none; border-bottom: 1px solid var(--line); flex-direction: row; align-items: center; gap: 14px; padding: 14px 16px; overflow-x: auto; }
+    .sidebar .brand { margin-bottom: 0; }
+    .side-nav { flex-direction: row; margin-top: 0; }
+    .sidebar .side-foot { display: none; }
+  }
+  .brand { display: flex; align-items: center; gap: 9px; margin-bottom: 24px; padding: 0 6px; }
+  .brand .mark { width: 30px; height: 30px; border-radius: 8px; background: var(--forest); display: grid; place-items: center; font-size: 15px; flex-shrink: 0; }
+  .brand .name { font-family: 'Fraunces', serif; font-weight: 600; font-size: 16px; }
+  .brand .sub { font-size: 10.5px; color: var(--ink-soft); }
+
+  .side-nav { display: flex; flex-direction: column; gap: 2px; }
+  .navlink {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
+    border: none; background: transparent; color: var(--ink-soft); font-size: 13.5px; font-weight: 600;
+    text-align: left; white-space: nowrap;
+  }
+  .navlink:hover { background: var(--paper-card-2); color: var(--ink); }
+  .navlink.active { background: var(--forest-tint); color: var(--forest-dark); }
+  .navlink .ico { font-size: 15px; width: 18px; text-align: center; }
+
+  .side-foot { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line); }
+  .who { font-size: 12.5px; color: var(--ink-soft); padding: 0 6px; margin-bottom: 10px; line-height: 1.5; }
+  .who b { color: var(--ink); display: block; font-size: 13.5px; }
+  .btn-ghost {
+    width: 100%; padding: 9px; border-radius: 9px; border: 1px solid var(--line);
+    background: transparent; color: var(--ink-soft); font-size: 13px; font-weight: 600;
+  }
+  .btn-ghost:hover { border-color: var(--rust); color: var(--rust); }
+
+  .main { padding: 28px 34px 60px; max-width: 1100px; }
+  @media (max-width: 600px) { .main { padding: 20px 16px 48px; } }
+  .page { display: none; }
+  .page.active { display: block; }
+  .page-head { margin-bottom: 22px; }
+  .page-head .eyebrow { font-size: 12.5px; color: var(--rust); font-weight: 700; }
+  .page-head h2 { font-size: 26px; margin-top: 4px; }
+  .page-head p { color: var(--ink-soft); font-size: 14.5px; margin-top: 6px; max-width: 62ch; line-height: 1.55; }
+
+  .card {
+    background: var(--paper-card); border: 1px solid var(--line); border-radius: 16px;
+  }
+
+  /* ---------- Registro de coleta (RF02) ---------- */
+  .coleta-grid { display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
+  @media (max-width: 820px) { .coleta-grid { grid-template-columns: 1fr; } }
+  .coleta-form { padding: 24px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 480px) { .two-col { grid-template-columns: 1fr; } }
+  .geo-row { display: flex; gap: 10px; align-items: center; margin-bottom: 6px; flex-wrap: wrap; }
+  .btn-geo {
+    padding: 9px 13px; border-radius: 9px; border: 1px solid var(--forest);
+    background: var(--forest-tint); color: var(--forest-dark); font-weight: 700; font-size: 13px;
+  }
+  .btn-geo:hover { background: var(--forest); color: #F3EEDC; }
+  .geo-status { font-size: 12px; color: var(--ink-soft); }
+  .readonly-field { background: var(--paper-card-2) !important; color: var(--ink-soft) !important; }
+  .tip-card { padding: 20px; }
+  .tip-card h3 { font-size: 14.5px; margin-bottom: 10px; }
+  .tip-card ol { margin: 0; padding-left: 18px; font-size: 13px; color: var(--ink-soft); line-height: 1.9; }
+  .tip-card .qr-mini { margin-top: 16px; padding: 14px; background: var(--paper-card-2); border-radius: 12px; font-size: 12px; color: var(--ink-soft); line-height: 1.6; }
+
+  /* ---------- Rastreamento ---------- */
+  .lote-list { display: flex; flex-direction: column; gap: 14px; }
+  .lote-card { padding: 18px 20px; }
+  .lote-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+  .lote-id { font-size: 12px; color: var(--ink-soft); font-weight: 600; }
+  .lote-title { font-size: 17px; font-weight: 700; margin-top: 2px; }
+  .lote-meta { font-size: 13px; color: var(--ink-soft); margin-top: 3px; }
+  .lote-badges { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .lote-tag {
+    font-size: 11.5px; font-weight: 700; padding: 5px 10px; border-radius: 100px;
+    background: var(--mustard-tint); color: #7A5417;
+    white-space: nowrap;
+  }
+  .btn-qr {
+    font-size: 11.5px; font-weight: 700; padding: 5px 10px; border-radius: 100px;
+    background: transparent; border: 1px solid var(--line); color: var(--ink-soft);
+  }
+  .btn-qr:hover { border-color: var(--forest); color: var(--forest-dark); }
+  .stages { display: flex; align-items: center; margin-top: 18px; }
+  .stage { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; }
+  .stage .pt { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--line); background: var(--paper); display: grid; place-items: center; font-size: 12px; font-weight: 700; color: var(--ink-soft); z-index: 1; }
+  .stage .lbl { font-size: 11.5px; color: var(--ink-soft); margin-top: 8px; font-weight: 600; text-align: center; }
+  .stage .bar { position: absolute; top: 13px; left: 50%; width: 100%; height: 2px; background: var(--line); z-index: 0; }
+  .stage:first-child .bar { display: none; }
+  .stage.done .pt { background: var(--forest); border-color: var(--forest); color: #F3EEDC; }
+  .stage.done .lbl { color: var(--forest-dark); }
+  .stage.done .bar { background: var(--forest); }
+  .stage.current .pt { background: var(--paper); border-color: var(--rust); color: var(--rust); box-shadow: 0 0 0 4px var(--rust-tint); }
+  .stage.current .lbl { color: var(--rust); }
+  .lote-foot { margin-top: 14px; font-size: 12.5px; color: var(--ink-soft); display: flex; gap: 6px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  .lote-foot b { color: var(--ink); font-weight: 600; }
+  .geo-tag { font-size: 11.5px; color: var(--ink-soft); }
+
+  .filter-row { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+  .chip {
+    padding: 7px 13px; border-radius: 100px; border: 1px solid var(--line);
+    background: var(--paper-card); font-size: 13px; font-weight: 600; color: var(--ink-soft);
+  }
+  .chip.active { background: var(--forest); border-color: var(--forest); color: #F3EEDC; }
+
+  .load-more-wrap { display: flex; justify-content: center; margin-top: 18px; }
+  .btn-loadmore {
+    padding: 10px 20px; border-radius: 100px; border: 1px solid var(--forest);
+    background: transparent; color: var(--forest-dark); font-weight: 700; font-size: 13px;
+  }
+  .btn-loadmore:hover { background: var(--forest); color: #F3EEDC; }
+
+  /* Marketplace */
+  .mk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+  .mk-card { padding: 18px; display: flex; flex-direction: column; }
+  .mk-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--forest-tint); display: grid; place-items: center; font-size: 19px; margin-bottom: 12px; }
+  .mk-mat { font-size: 15.5px; font-weight: 700; }
+  .mk-coop { font-size: 12.5px; color: var(--ink-soft); margin-top: 2px; }
+  .mk-stats { display: flex; justify-content: space-between; margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line); font-size: 13px; }
+  .mk-stats div b { display: block; font-size: 15px; color: var(--ink); }
+  .mk-stats div span { color: var(--ink-soft); font-size: 11.5px; }
+  .btn-mk {
+    margin-top: 14px; padding: 10px; border-radius: 9px; border: 1px solid var(--forest);
+    background: transparent; color: var(--forest-dark); font-weight: 700; font-size: 13.5px;
+  }
+  .btn-mk:hover { background: var(--forest); color: #F3EEDC; }
+  .btn-mk.requested { background: var(--forest-tint); border-color: var(--forest-tint); color: var(--forest-dark); cursor: default; }
+
+  /* Pontuação (RF08) */
+  .score-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px; }
+  @media (max-width: 700px) { .score-hero { grid-template-columns: 1fr; } }
+  .score-card { padding: 22px; }
+  .score-card .n { font-family: 'Fraunces', serif; font-size: 34px; font-weight: 600; color: var(--forest-dark); }
+  .score-card .lbl { font-size: 12.5px; color: var(--ink-soft); margin-top: 4px; }
+  .level-track { margin-top: 14px; }
+  .level-bar { height: 8px; background: var(--paper-card-2); border-radius: 100px; overflow: hidden; }
+  .level-fill { height: 100%; background: linear-gradient(90deg, var(--mustard), var(--forest)); }
+  .level-lbl { font-size: 11.5px; color: var(--ink-soft); margin-top: 6px; display: flex; justify-content: space-between; }
+
+  table.rank { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  table.rank th { text-align: left; font-size: 11.5px; text-transform: none; color: var(--ink-soft); padding: 0 10px 10px; border-bottom: 1px solid var(--line); font-weight: 600; }
+  table.rank td { padding: 11px 10px; border-bottom: 1px solid var(--line); }
+  table.rank tr:last-child td { border-bottom: none; }
+  table.rank .pos { font-weight: 700; color: var(--ink-soft); width: 28px; }
+  table.rank .me { background: var(--forest-tint); }
+  .pts-pill { font-weight: 700; color: var(--forest-dark); }
+
+  .reward-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-top: 16px; }
+  .reward-card { padding: 16px; text-align: left; }
+  .reward-card .ic { font-size: 22px; }
+  .reward-card .rn { font-weight: 700; font-size: 14.5px; margin-top: 8px; }
+  .reward-card .rc { font-size: 12.5px; color: var(--ink-soft); margin-top: 3px; }
+  .btn-redeem { margin-top: 12px; width: 100%; padding: 9px; border-radius: 9px; border: 1px solid var(--rust); background: transparent; color: var(--rust); font-weight: 700; font-size: 13px; }
+  .btn-redeem:hover:not(:disabled) { background: var(--rust); color: #FBEDE6; }
+  .btn-redeem:disabled { opacity: .45; cursor: not-allowed; border-color: var(--line); color: var(--ink-soft); }
+
+  /* Impacto */
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 26px; }
+  @media (max-width: 760px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+  .stat-card { padding: 18px; }
+  .stat-card .n { font-family: 'Fraunces', serif; font-size: 28px; font-weight: 600; color: var(--forest-dark); }
+  .stat-card .lbl { font-size: 12.5px; color: var(--ink-soft); margin-top: 4px; }
+  .panel { padding: 22px; margin-bottom: 20px; }
+  .panel h3 { font-size: 15.5px; margin-bottom: 16px; }
+  .bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .bar-row .bl { width: 88px; font-size: 13px; color: var(--ink-soft); flex-shrink: 0; }
+  .bar-track { flex: 1; height: 10px; background: var(--paper-card-2); border-radius: 100px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 100px; background: var(--forest); }
+  .bar-row .bv { width: 56px; text-align: right; font-size: 12.5px; font-weight: 700; color: var(--ink); flex-shrink: 0; }
+  .impact-note { font-size: 12.5px; color: var(--ink-soft); line-height: 1.6; }
+  .arch-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  @media (max-width: 760px) { .arch-grid { grid-template-columns: repeat(2, 1fr); } }
+  .arch-item { padding: 12px; background: var(--paper-card-2); border-radius: 10px; font-size: 12px; color: var(--ink-soft); }
+  .arch-item b { display: block; color: var(--ink); font-size: 13px; margin-bottom: 2px; }
+
+  /* Modal QR (RF03) */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(22,32,26,0.55);
+    display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-box {
+    background: var(--paper); border-radius: 18px; padding: 26px;
+    max-width: 340px; width: 100%; text-align: center; position: relative;
+  }
+  .modal-close { position: absolute; top: 12px; right: 12px; border: none; background: transparent; font-size: 16px; color: var(--ink-soft); padding: 6px; }
+  .modal-box h3 { font-size: 16px; margin-bottom: 4px; }
+  .modal-box .sub { font-size: 12.5px; color: var(--ink-soft); margin-bottom: 16px; }
+  #qr-render { display: flex; justify-content: center; padding: 12px; background: #fff; border-radius: 12px; min-height: 160px; align-items: center; }
+  .qr-fallback { font-size: 11px; text-align: left; background: var(--paper-card-2); padding: 10px; border-radius: 8px; word-break: break-all; color: var(--ink-soft); }
+  .qr-info { margin-top: 14px; font-size: 12.5px; color: var(--ink-soft); text-align: left; background: var(--paper-card); border: 1px solid var(--line); border-radius: 10px; padding: 12px; line-height: 1.7; }
+  .qr-info b { color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="app">
+  <div id="offline-banner">📡 Você está offline — dados dos lotes continuam disponíveis localmente (RNF02). Novos registros serão sincronizados ao reconectar.</div>
+
+  <!-- ===================== AUTH SCREEN (RF01) ===================== -->
+  <section id="view-auth">
+    <div class="auth-shell">
+      <div class="auth-side">
+        <div>
+          <div class="auth-mark"><span class="dot"></span> EcoLastro CTBJ</div>
+          <h1>Rastreamento digital de resíduos recicláveis</h1>
+          <p class="sub">Da coleta até a reciclagem final: um passaporte digital para cada lote coletado no Colégio Técnico de Bom Jesus.</p>
+          <div class="chain">
+            <span>Coleta</span><span class="arrow">→</span>
+            <span>Triagem</span><span class="arrow">→</span>
+            <span>Venda</span><span class="arrow">→</span>
+            <span>Reciclagem</span>
+          </div>
+        </div>
+        <div class="auth-quote">Catadores e cooperativas registram a origem do material; empresas conferem a procedência antes de negociar créditos ambientais.</div>
+      </div>
+
+      <div class="auth-form-wrap">
+        <div class="tabs">
+          <button class="tab-btn active" id="tab-login" onclick="setAuthTab('login')">Entrar</button>
+          <button class="tab-btn" id="tab-signup" onclick="setAuthTab('signup')">Cadastrar</button>
+        </div>
+
+        <!-- Login -->
+        <form id="form-login" onsubmit="return doLogin(event)">
+          <div class="field">
+            <label for="login-email">E-mail</label>
+            <input id="login-email" type="email" placeholder="voce@exemplo.com" required>
+          </div>
+          <div class="field">
+            <label for="login-senha">Senha</label>
+            <div class="pw-wrap">
+              <input id="login-senha" type="password" placeholder="••••••••" required minlength="4">
+              <button type="button" class="pw-toggle" onclick="togglePw('login-senha', this)">mostrar</button>
+            </div>
+          </div>
+          <div class="form-error" id="login-error"></div>
+          <button class="btn-primary" type="submit">Entrar na plataforma</button>
+          <p class="form-note">Ainda não tem conta? <a href="#" onclick="setAuthTab('signup');return false;" style="color:var(--forest-dark); font-weight:700;">Cadastre-se</a></p>
+          <div class="security-note">🔒 <span><b>RNF03 — Segurança dos dados:</b> senhas nunca são exibidas em texto puro por padrão e, na versão em produção, trafegam sob HTTPS e ficam armazenadas com hash no banco de dados.</span></div>
+        </form>
+
+        <!-- Cadastro -->
+        <form id="form-signup" class="hidden" onsubmit="return doSignup(event)">
+          <div class="field">
+            <label for="s-nome">Nome completo</label>
+            <input id="s-nome" type="text" placeholder="Como devemos te chamar" required>
+          </div>
+          <div class="field">
+            <label for="s-email">E-mail</label>
+            <input id="s-email" type="email" placeholder="voce@exemplo.com" required>
+          </div>
+          <div class="two-col">
+            <div class="field">
+              <label for="s-senha">Senha</label>
+              <div class="pw-wrap">
+                <input id="s-senha" type="password" placeholder="Mín. 4 caracteres" required minlength="4">
+                <button type="button" class="pw-toggle" onclick="togglePw('s-senha', this)">mostrar</button>
+              </div>
+            </div>
+            <div class="field">
+              <label for="s-senha2">Confirmar senha</label>
+              <div class="pw-wrap">
+                <input id="s-senha2" type="password" placeholder="Repita a senha" required minlength="4">
+                <button type="button" class="pw-toggle" onclick="togglePw('s-senha2', this)">mostrar</button>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Perfil de acesso</label>
+            <div class="profile-grid" id="profile-grid">
+              <button type="button" class="profile-opt selected" data-val="catador" onclick="pickProfile(this)">♻️ Catador</button>
+              <button type="button" class="profile-opt" data-val="cooperativa" onclick="pickProfile(this)">🤝 Cooperativa</button>
+              <button type="button" class="profile-opt" data-val="empresa" onclick="pickProfile(this)">🏢 Empresa</button>
+            </div>
+          </div>
+          <div class="form-error" id="signup-error"></div>
+          <button class="btn-primary" type="submit">Criar conta</button>
+          <p class="form-note">Já tem cadastro? <a href="#" onclick="setAuthTab('login');return false;" style="color:var(--forest-dark); font-weight:700;">Entrar</a></p>
+          <div class="security-note">🔒 <span><b>RNF03 — Segurança dos dados:</b> a confirmação de senha evita erros de digitação e cada perfil (catador, cooperativa, empresa) só acessa as funções pertinentes ao seu papel.</span></div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== APP SHELL ===================== -->
+  <section id="view-app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="mark">♻️</div>
+        <div>
+          <div class="name">EcoLastro</div>
+          <div class="sub">CTBJ</div>
+        </div>
+      </div>
+      <nav class="side-nav">
+        <button class="navlink active" data-page="coleta" onclick="goPage('coleta')"><span class="ico">📍</span> Registrar coleta</button>
+        <button class="navlink" data-page="rastreamento" onclick="goPage('rastreamento')"><span class="ico">🔗</span> Rastreamento</button>
+        <button class="navlink" data-page="marketplace" onclick="goPage('marketplace')"><span class="ico">🏪</span> Marketplace</button>
+        <button class="navlink" data-page="pontuacao" onclick="goPage('pontuacao')"><span class="ico">⭐</span> Pontuação</button>
+        <button class="navlink" data-page="impacto" onclick="goPage('impacto')"><span class="ico">🌱</span> Impacto ambiental</button>
+      </nav>
+      <div class="side-foot">
+        <div class="who">
+          <b id="who-name">—</b>
+          <span id="who-role">—</span>
+        </div>
+        <button class="btn-ghost" onclick="doLogout()">Sair</button>
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <!-- ---------- REGISTRAR COLETA (RF02 + RF03) ---------- -->
+      <div class="page active" id="page-coleta">
+        <div class="page-head">
+          <div class="eyebrow">RF02 · Registro de coleta com geolocalização</div>
+          <h2>Registrar nova coleta</h2>
+          <p>Informe o material coletado e a localização. Ao salvar, um passaporte digital com QR code é gerado automaticamente para o lote (RF03).</p>
+        </div>
+
+        <div class="coleta-grid">
+          <form class="card coleta-form" onsubmit="return registrarColeta(event)">
+            <div class="two-col">
+              <div class="field">
+                <label for="c-material">Material coletado</label>
+                <select id="c-material" required>
+                  <option>Papelão</option>
+                  <option>Plástico PET</option>
+                  <option>Plástico misto</option>
+                  <option>Vidro</option>
+                  <option>Metal</option>
+                  <option>Papel branco</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="c-peso">Peso (kg)</label>
+                <input id="c-peso" type="number" min="1" step="0.1" placeholder="Ex: 45" required>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Localização da coleta</label>
+              <div class="geo-row">
+                <button type="button" class="btn-geo" onclick="usarLocalizacao()">📍 Usar minha localização</button>
+                <span class="geo-status" id="geo-status">Nenhuma localização capturada ainda.</span>
+              </div>
+              <div class="two-col">
+                <input id="c-lat" type="text" placeholder="Latitude" required>
+                <input id="c-lng" type="text" placeholder="Longitude" required>
+              </div>
+              <div class="field-hint">Sem GPS disponível? Digite as coordenadas manualmente ou o nome do ponto de coleta.</div>
+            </div>
+
+            <div class="field">
+              <label for="c-resp">Responsável pelo lote (RN01)</label>
+              <input id="c-resp" type="text" class="readonly-field" readonly>
+            </div>
+
+            <button class="btn-primary" type="submit">Registrar coleta e gerar QR code</button>
+          </form>
+
+          <div class="card tip-card">
+            <h3>Como funciona</h3>
+            <ol>
+              <li>Preencha material, peso e localização da coleta.</li>
+              <li>O lote entra no rastreamento na etapa "Coleta".</li>
+              <li>Um QR code único é gerado como passaporte digital.</li>
+              <li>Cooperativas e empresas usam o QR code para conferir a origem.</li>
+            </ol>
+            <div class="qr-mini">📦 Cada QR code carrega: código do lote, material, peso, responsável e coordenadas de coleta.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- RASTREAMENTO (RF04) ---------- -->
+      <div class="page" id="page-rastreamento">
+        <div class="page-head">
+          <div class="eyebrow">RF04 · Acompanhamento das etapas</div>
+          <h2>Rastreamento dos lotes</h2>
+          <p>Cada lote é vinculado ao catador ou cooperativa responsável pela coleta (RN01) e acompanha o ciclo Coleta → Triagem → Venda → Reciclagem.</p>
+        </div>
+
+        <div class="filter-row" id="lote-filters"></div>
+        <div class="lote-list" id="lote-list"></div>
+        <div class="load-more-wrap" id="lote-loadmore-wrap">
+          <button class="btn-loadmore" onclick="loadMoreLotes()">Carregar mais lotes</button>
+        </div>
+      </div>
+
+      <!-- ---------- MARKETPLACE (RF06) ---------- -->
+      <div class="page" id="page-marketplace">
+        <div class="page-head">
+          <div class="eyebrow">RF06 · Estrutura do marketplace</div>
+          <h2>Marketplace de créditos ambientais</h2>
+          <p>Lotes já reciclados geram créditos que empresas podem solicitar para comprovar práticas sustentáveis e apoiar cooperativas.</p>
+        </div>
+
+        <div class="mk-grid" id="mk-grid"></div>
+        <div class="load-more-wrap" id="mk-loadmore-wrap">
+          <button class="btn-loadmore" onclick="loadMoreCreditos()">Carregar mais créditos</button>
+        </div>
+      </div>
+
+      <!-- ---------- PONTUAÇÃO (RF08) ---------- -->
+      <div class="page" id="page-pontuacao">
+        <div class="page-head">
+          <div class="eyebrow">RF08 · Sistema de pontuação</div>
+          <h2>Pontuação e recompensas</h2>
+          <p>Cada quilo reciclado gera pontos para o catador ou cooperativa responsável. Os pontos podem ser trocados por recompensas.</p>
+        </div>
+
+        <div class="score-hero">
+          <div class="card score-card">
+            <div class="n" id="my-points">0 pts</div>
+            <div class="lbl">Seus pontos disponíveis</div>
+            <div class="level-track">
+              <div class="level-bar"><div class="level-fill" id="level-fill" style="width:0%"></div></div>
+              <div class="level-lbl"><span id="level-name">Nível Semente</span><span id="level-next">faltam — pts</span></div>
+            </div>
+          </div>
+          <div class="card score-card">
+            <div class="n" id="my-kg">0 kg</div>
+            <div class="lbl">Total reciclado no seu nome</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Ranking de catadores e cooperativas</h3>
+          <table class="rank" id="rank-table"></table>
+        </div>
+
+        <div class="panel">
+          <h3>Recompensas disponíveis</h3>
+          <div class="reward-grid" id="reward-grid"></div>
+        </div>
+      </div>
+
+      <!-- ---------- IMPACTO AMBIENTAL (RF07) ---------- -->
+      <div class="page" id="page-impacto">
+        <div class="page-head">
+          <div class="eyebrow">RF07 · Painel de impacto ambiental</div>
+          <h2>Impacto do CTBJ</h2>
+          <p>Visão consolidada do material rastreado na plataforma desde o início da coleta.</p>
+        </div>
+
+        <div class="stat-grid" id="impact-stats"></div>
+
+        <div class="panel">
+          <h3>Material reciclado por tipo</h3>
+          <div id="impact-bars"></div>
+        </div>
+
+        <div class="panel">
+          <h3>RNF04 — Preparado para escalar</h3>
+          <div class="arch-grid">
+            <div class="arch-item"><b>Listas paginadas</b>carregamento sob demanda em Rastreamento e Marketplace</div>
+            <div class="arch-item"><b>Front-end React / React Native</b>componentes reutilizáveis entre web e mobile</div>
+            <div class="arch-item"><b>Back-end Node.js</b>API modular, pronta para novos módulos (RF05, RF09...)</div>
+            <div class="arch-item"><b>PostgreSQL</b>banco relacional apto a crescer com o número de lotes e usuários</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <p class="impact-note">Estimativas calculadas a partir do peso registrado em cada lote (RF02) e das etapas confirmadas no rastreamento (RF04). Valores de CO₂ evitado usam médias de referência por tipo de material.</p>
+        </div>
+      </div>
+
+    </main>
+  </section>
+
+  <!-- ---------- Modal QR code (RF03) ---------- -->
+  <div class="modal-overlay" id="qr-modal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeQrModal()">✕</button>
+      <h3>Passaporte digital do lote</h3>
+      <div class="sub" id="qr-lote-id">—</div>
+      <div id="qr-render"></div>
+      <div class="qr-info" id="qr-info"></div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.0.3/qrcode.min.js"></script>
+<script>
+  // ---------------- Estado ----------------
+  const STAGES = ['Coleta', 'Triagem', 'Venda', 'Reciclagem'];
+  const STORAGE_KEY = 'ecolastro_lotes_v1';
+  const REDEEM_KEY = 'ecolastro_resgates_v1';
+  const LOTE_PAGE_SIZE = 4;
+  const MK_PAGE_SIZE = 3;
+  let currentUserName = 'Você';
+
+  const LOTES_DEFAULT = [
+    { id: 'LT-014', material: 'Papelão', icon: '📦', kg: 120, resp: 'Maria Silva', tipo: 'Catador', stage: 1, atualizado: 'há 2 dias', lat: '-4.9744', lng: '-42.2378' },
+    { id: 'LT-015', material: 'Plástico PET', icon: '🧴', kg: 85, resp: 'João Souza', tipo: 'Catador', stage: 2, atualizado: 'há 1 dia', lat: '-4.9751', lng: '-42.2360' },
+    { id: 'LT-016', material: 'Vidro', icon: '🍾', kg: 40, resp: 'Ana Lima', tipo: 'Catador', stage: 0, atualizado: 'hoje', lat: '-4.9739', lng: '-42.2391' },
+    { id: 'LT-017', material: 'Metal', icon: '🥫', kg: 60, resp: 'Cooperativa Verde Vida', tipo: 'Cooperativa', stage: 3, atualizado: 'há 4 dias', lat: '-4.9760', lng: '-42.2350' },
+    { id: 'LT-018', material: 'Papel branco', icon: '📄', kg: 32, resp: 'Pedro Rocha', tipo: 'Catador', stage: 1, atualizado: 'há 3 dias', lat: '-4.9748', lng: '-42.2382' },
+    { id: 'LT-019', material: 'Plástico misto', icon: '🧃', kg: 54, resp: 'Cooperativa Renasce', tipo: 'Cooperativa', stage: 2, atualizado: 'há 6 horas', lat: '-4.9733', lng: '-42.2401' },
+  ];
+
+  const CREDITOS_DEFAULT = [
+    { material: 'Metal', icon: '🥫', origem: 'Cooperativa Verde Vida', kg: 60, credito: 18 },
+    { material: 'Papelão', icon: '📦', origem: 'Cooperativa Renasce', kg: 210, credito: 42 },
+    { material: 'Vidro', icon: '🍾', origem: 'Maria Silva', kg: 40, credito: 9 },
+    { material: 'Plástico PET', icon: '🧴', origem: 'João Souza', kg: 85, credito: 21 },
+    { material: 'Papel branco', icon: '📄', origem: 'Pedro Rocha', kg: 32, credito: 7 },
+  ];
+
+  const REWARDS = [
+    { icon: '🎫', nome: 'Vale-transporte (1 semana)', custo: 80 },
+    { icon: '🧤', nome: 'Kit de EPI (luvas + botas)', custo: 150 },
+    { icon: '🥗', nome: 'Cesta básica', custo: 220 },
+    { icon: '🏅', nome: 'Certificado de destaque CTBJ', custo: 60 },
+  ];
+
+  let LOTES = [];
+  let loteVisibleCount = LOTE_PAGE_SIZE;
+  let mkVisibleCount = MK_PAGE_SIZE;
+  let currentFilter = 'todos';
+  let redeemedTotal = 0;
+
+  function loadState() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      LOTES = Array.isArray(saved) && saved.length ? saved : JSON.parse(JSON.stringify(LOTES_DEFAULT));
+    } catch (e) {
+      LOTES = JSON.parse(JSON.stringify(LOTES_DEFAULT));
+    }
+    try {
+      redeemedTotal = Number(localStorage.getItem(REDEEM_KEY)) || 0;
+    } catch (e) { redeemedTotal = 0; }
+  }
+
+  function saveLotes() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(LOTES)); } catch (e) { /* modo offline sem storage disponível */ }
+  }
+  function saveRedeemed() {
+    try { localStorage.setItem(REDEEM_KEY, String(redeemedTotal)); } catch (e) { /* ignora */ }
+  }
+
+  // ---------------- Offline (RNF02) ----------------
+  function updateOnlineStatus() {
+    document.getElementById('offline-banner').classList.toggle('show', !navigator.onLine);
+  }
+  window.addEventListener('online', updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+
+  // ---------------- Auth ----------------
+  function togglePw(id, btn) {
+    const input = document.getElementById(id);
+    const isPw = input.type === 'password';
+    input.type = isPw ? 'text' : 'password';
+    btn.textContent = isPw ? 'ocultar' : 'mostrar';
+  }
+
+  function setAuthTab(which) {
+    document.getElementById('tab-login').classList.toggle('active', which === 'login');
+    document.getElementById('tab-signup').classList.toggle('active', which === 'signup');
+    document.getElementById('form-login').classList.toggle('hidden', which !== 'login');
+    document.getElementById('form-signup').classList.toggle('hidden', which !== 'signup');
+  }
+
+  function pickProfile(btn) {
+    document.querySelectorAll('.profile-opt').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+
+  function doLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value.trim();
+    if (!email) {
+      document.getElementById('login-error').textContent = 'Informe um e-mail válido.';
+      return false;
+    }
+    const nome = email.split('@')[0].replace(/[._]/g, ' ');
+    enterApp(nome.charAt(0).toUpperCase() + nome.slice(1), 'Perfil: Catador');
+    return false;
+  }
+
+  function doSignup(e) {
+    e.preventDefault();
+    const nome = document.getElementById('s-nome').value.trim();
+    const senha = document.getElementById('s-senha').value;
+    const senha2 = document.getElementById('s-senha2').value;
+    if (!nome) {
+      document.getElementById('signup-error').textContent = 'Informe seu nome completo.';
+      return false;
+    }
+    if (senha !== senha2) {
+      document.getElementById('signup-error').textContent = 'As senhas não coincidem.';
+      return false;
+    }
+    const perfil = document.querySelector('.profile-opt.selected').dataset.val;
+    const perfilLabel = { catador: 'Catador', cooperativa: 'Cooperativa', empresa: 'Empresa' }[perfil];
+    enterApp(nome, 'Perfil: ' + perfilLabel);
+    return false;
+  }
+
+  function enterApp(nome, roleLabel) {
+    currentUserName = nome;
+    document.getElementById('who-name').textContent = nome;
+    document.getElementById('who-role').textContent = roleLabel;
+    document.getElementById('c-resp').value = nome;
+    document.getElementById('view-auth').style.display = 'none';
+    document.getElementById('view-app').classList.add('show');
+    renderPontuacao();
+    goPage('coleta');
+  }
+
+  function doLogout() {
+    document.getElementById('view-app').classList.remove('show');
+    document.getElementById('view-auth').style.display = 'grid';
+    document.getElementById('form-login').reset();
+    document.getElementById('form-signup').reset();
+    document.getElementById('login-error').textContent = '';
+    document.getElementById('signup-error').textContent = '';
+    setAuthTab('login');
+  }
+
+  // ---------------- Navegação ----------------
+  function goPage(name) {
+    document.querySelectorAll('.navlink').forEach(b => b.classList.toggle('active', b.dataset.page === name));
+    document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + name));
+  }
+
+  // ---------------- Registrar coleta (RF02) ----------------
+  function usarLocalizacao() {
+    const status = document.getElementById('geo-status');
+    if (!navigator.geolocation) {
+      status.textContent = 'Geolocalização indisponível neste navegador — digite as coordenadas manualmente.';
+      return;
+    }
+    status.textContent = 'Obtendo localização...';
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        document.getElementById('c-lat').value = pos.coords.latitude.toFixed(5);
+        document.getElementById('c-lng').value = pos.coords.longitude.toFixed(5);
+        status.textContent = 'Localização capturada com sucesso ✓';
+      },
+      err => {
+        status.textContent = 'Não foi possível obter sua localização (' + err.message + '). Digite manualmente.';
+      },
+      { timeout: 8000 }
+    );
+  }
+
+  function registrarColeta(e) {
+    e.preventDefault();
+    const material = document.getElementById('c-material').value;
+    const peso = parseFloat(document.getElementById('c-peso').value);
+    const lat = document.getElementById('c-lat').value.trim();
+    const lng = document.getElementById('c-lng').value.trim();
+    const resp = document.getElementById('c-resp').value || currentUserName;
+    const icons = { 'Papelão': '📦', 'Plástico PET': '🧴', 'Plástico misto': '🧃', 'Vidro': '🍾', 'Metal': '🥫', 'Papel branco': '📄' };
+
+    const novoId = 'LT-' + String(100 + LOTES.length).padStart(3, '0');
+    const novoLote = {
+      id: novoId, material, icon: icons[material] || '♻️', kg: peso,
+      resp, tipo: 'Catador', stage: 0, atualizado: 'agora mesmo', lat, lng,
+    };
+    LOTES.unshift(novoLote);
+    saveLotes();
+    loteVisibleCount = Math.max(loteVisibleCount, LOTE_PAGE_SIZE);
+    renderFilters();
+    renderLotes();
+    renderPontuacao();
+    renderImpacto();
+
+    e.target.reset();
+    document.getElementById('c-resp').value = resp;
+    document.getElementById('geo-status').textContent = 'Nenhuma localização capturada ainda.';
+
+    openQrModal(novoLote);
+    return false;
+  }
+
+  // ---------------- QR code (RF03) ----------------
+  function pickQrTypeNumber(len) {
+    if (len < 40) return 4;
+    if (len < 80) return 6;
+    if (len < 130) return 9;
+    if (len < 200) return 13;
+    return 20;
+  }
+
+  function openQrModal(lote) {
+    document.getElementById('qr-lote-id').textContent = lote.id;
+    const payload = JSON.stringify({
+      lote: lote.id, material: lote.material, kg: lote.kg,
+      responsavel: lote.resp, lat: lote.lat, lng: lote.lng
+    });
+    const renderEl = document.getElementById('qr-render');
+    renderEl.innerHTML = '';
+    let rendered = false;
+    if (typeof qrcode === 'function') {
+      try {
+        const qr = qrcode(pickQrTypeNumber(payload.length), 'M');
+        qr.addData(payload, 'Byte');
+        qr.make();
+        renderEl.innerHTML = qr.createImgTag(5, 6);
+        rendered = true;
+      } catch (err) {
+        rendered = false;
+      }
+    }
+    if (!rendered) {
+      renderEl.innerHTML = '<div class="qr-fallback mono">' + payload + '</div>';
+    }
+    document.getElementById('qr-info').innerHTML =
+      '<div><b>Material:</b> ' + lote.material + ' · ' + lote.kg + ' kg</div>' +
+      '<div><b>Responsável:</b> ' + lote.resp + '</div>' +
+      '<div><b>Local:</b> ' + (lote.lat && lote.lng ? lote.lat + ', ' + lote.lng : 'não informado') + '</div>';
+    document.getElementById('qr-modal').classList.add('show');
+  }
+  function closeQrModal() {
+    document.getElementById('qr-modal').classList.remove('show');
+  }
+  function showLoteQr(id) {
+    const lote = LOTES.find(l => l.id === id);
+    if (lote) openQrModal(lote);
+  }
+
+  // ---------------- Rastreamento (RF04) ----------------
+  function renderFilters() {
+    const materiais = ['todos', ...new Set(LOTES.map(l => l.material))];
+    const wrap = document.getElementById('lote-filters');
+    wrap.innerHTML = materiais.map(m =>
+      '<button class="chip ' + (m === currentFilter ? 'active' : '') + '" onclick="setFilter(\'' + m + '\')">' + (m === 'todos' ? 'Todos os lotes' : m) + '</button>'
+    ).join('');
+  }
+
+  function setFilter(m) {
+    currentFilter = m;
+    loteVisibleCount = LOTE_PAGE_SIZE;
+    renderFilters();
+    renderLotes();
+  }
+
+  function loadMoreLotes() {
+    loteVisibleCount += LOTE_PAGE_SIZE;
+    renderLotes();
+  }
+
+  function renderLotes() {
+    const full = currentFilter === 'todos' ? LOTES : LOTES.filter(l => l.material === currentFilter);
+    const list = full.slice(0, loteVisibleCount);
+    const wrap = document.getElementById('lote-list');
+    wrap.innerHTML = list.map(l => {
+      const stagesHtml = STAGES.map((s, i) => {
+        let cls = '';
+        if (i < l.stage) cls = 'done';
+        else if (i === l.stage) cls = 'current';
+        return '<div class="stage ' + cls + '"><div class="bar"></div><div class="pt">' + (i < l.stage ? '✓' : i + 1) + '</div><div class="lbl">' + s + '</div></div>';
+      }).join('');
+      return (
+        '<div class="card lote-card">' +
+          '<div class="lote-top">' +
+            '<div>' +
+              '<div class="lote-id">' + l.id + '</div>' +
+              '<div class="lote-title">' + l.icon + ' ' + l.material + ' · ' + l.kg + ' kg</div>' +
+              '<div class="lote-meta">Responsável: ' + l.resp + ' (' + l.tipo + ')</div>' +
+            '</div>' +
+            '<div class="lote-badges">' +
+              '<button class="btn-qr" onclick="showLoteQr(\'' + l.id + '\')">▦ QR code</button>' +
+              '<span class="lote-tag">' + STAGES[l.stage] + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="stages">' + stagesHtml + '</div>' +
+          '<div class="lote-foot"><span>Atualizado <b>' + l.atualizado + '</b></span>' +
+          '<span class="geo-tag">📍 ' + (l.lat && l.lng ? l.lat + ', ' + l.lng : 'local não informado') + '</span></div>' +
+        '</div>'
+      );
+    }).join('') || '<p style="color:var(--ink-soft); font-size:14px;">Nenhum lote encontrado para este material.</p>';
+
+    document.getElementById('lote-loadmore-wrap').style.display = (loteVisibleCount < full.length) ? 'flex' : 'none';
+  }
+
+  // ---------------- Marketplace (RF06) ----------------
+  function loadMoreCreditos() {
+    mkVisibleCount += MK_PAGE_SIZE;
+    renderMarketplace();
+  }
+
+  function renderMarketplace() {
+    const list = CREDITOS_DEFAULT.slice(0, mkVisibleCount);
+    const wrap = document.getElementById('mk-grid');
+    wrap.innerHTML = list.map((c, idx) =>
+      '<div class="card mk-card">' +
+        '<div class="mk-icon">' + c.icon + '</div>' +
+        '<div class="mk-mat">' + c.material + '</div>' +
+        '<div class="mk-coop">Origem: ' + c.origem + '</div>' +
+        '<div class="mk-stats"><div><b>' + c.kg + ' kg</b><span>reciclado</span></div><div><b>' + c.credito + '</b><span>créditos</span></div></div>' +
+        '<button class="btn-mk" id="mk-btn-' + idx + '" onclick="requestCredit(' + idx + ')">Solicitar crédito</button>' +
+      '</div>'
+    ).join('');
+    document.getElementById('mk-loadmore-wrap').style.display = (mkVisibleCount < CREDITOS_DEFAULT.length) ? 'flex' : 'none';
+  }
+
+  function requestCredit(idx) {
+    const btn = document.getElementById('mk-btn-' + idx);
+    btn.textContent = 'Solicitação enviada ✓';
+    btn.classList.add('requested');
+    btn.disabled = true;
+  }
+
+  // ---------------- Pontuação e recompensas (RF08) ----------------
+  const LEVELS = [
+    { nome: 'Nível Semente', min: 0 },
+    { nome: 'Nível Broto', min: 200 },
+    { nome: 'Nível Raiz Forte', min: 500 },
+    { nome: 'Nível Guardião Verde', min: 1000 },
+  ];
+
+  function pontosPorResponsavel() {
+    const mapa = {};
+    LOTES.forEach(l => { mapa[l.resp] = (mapa[l.resp] || 0) + l.kg * 10; });
+    return mapa;
+  }
+
+  function renderPontuacao() {
+    const mapa = pontosPorResponsavel();
+    const meusPontosBrutos = mapa[currentUserName] || 0;
+    const meuKg = LOTES.filter(l => l.resp === currentUserName).reduce((a, l) => a + l.kg, 0);
+    const meusPontos = Math.max(0, meusPontosBrutos - redeemedTotal);
+
+    document.getElementById('my-points').textContent = meusPontos + ' pts';
+    document.getElementById('my-kg').textContent = meuKg + ' kg';
+
+    let nivelAtual = LEVELS[0], proximo = LEVELS[1];
+    for (let i = 0; i < LEVELS.length; i++) {
+      if (meusPontos >= LEVELS[i].min) { nivelAtual = LEVELS[i]; proximo = LEVELS[i + 1] || null; }
+    }
+    document.getElementById('level-name').textContent = nivelAtual.nome;
+    if (proximo) {
+      const pct = ((meusPontos - nivelAtual.min) / (proximo.min - nivelAtual.min)) * 100;
+      document.getElementById('level-fill').style.width = Math.min(100, Math.max(0, pct)) + '%';
+      document.getElementById('level-next').textContent = 'faltam ' + Math.max(0, proximo.min - meusPontos) + ' pts para ' + proximo.nome;
+    } else {
+      document.getElementById('level-fill').style.width = '100%';
+      document.getElementById('level-next').textContent = 'nível máximo atingido';
+    }
+
+    const ranking = Object.entries(mapa)
+      .map(([nome, pts]) => ({ nome, pts, tipo: (LOTES.find(l => l.resp === nome) || {}).tipo || '—' }))
+      .sort((a, b) => b.pts - a.pts);
+
+    const rows = ranking.map((r, i) =>
+      '<tr class="' + (r.nome === currentUserName ? 'me' : '') + '">' +
+        '<td class="pos">' + (i + 1) + 'º</td>' +
+        '<td>' + r.nome + (r.nome === currentUserName ? ' (você)' : '') + '</td>' +
+        '<td>' + r.tipo + '</td>' +
+        '<td class="pts-pill">' + r.pts + ' pts</td>' +
+      '</tr>'
+    ).join('');
+    document.getElementById('rank-table').innerHTML =
+      '<tr><th>#</th><th>Nome</th><th>Perfil</th><th>Pontos</th></tr>' + rows;
+
+    document.getElementById('reward-grid').innerHTML = REWARDS.map((r, idx) => {
+      const disabled = meusPontos < r.custo;
+      return (
+        '<div class="card reward-card">' +
+          '<div class="ic">' + r.icon + '</div>' +
+          '<div class="rn">' + r.nome + '</div>' +
+          '<div class="rc">' + r.custo + ' pts</div>' +
+          '<button class="btn-redeem" ' + (disabled ? 'disabled' : '') + ' onclick="resgatar(' + idx + ')">Resgatar</button>' +
+        '</div>'
+      );
+    }).join('');
+  }
+
+  function resgatar(idx) {
+    const custo = REWARDS[idx].custo;
+    redeemedTotal += custo;
+    saveRedeemed();
+    renderPontuacao();
+  }
+
+  // ---------------- Impacto ambiental (RF07) ----------------
+  function renderImpacto() {
+    const totalKg = LOTES.reduce((a, l) => a + l.kg, 0);
+    const co2 = Math.round(totalKg * 1.8);
+    const stats = [
+      { n: totalKg + ' kg', lbl: 'Material rastreado' },
+      { n: LOTES.length, lbl: 'Lotes com passaporte digital' },
+      { n: co2 + ' kg', lbl: 'CO₂ evitado (estimado)' },
+      { n: new Set(LOTES.map(l => l.resp)).size, lbl: 'Catadores e cooperativas ativos' },
+    ];
+    document.getElementById('impact-stats').innerHTML = stats.map(s =>
+      '<div class="card stat-card"><div class="n">' + s.n + '</div><div class="lbl">' + s.lbl + '</div></div>'
+    ).join('');
+
+    const grupos = {};
+    LOTES.forEach(l => {
+      const chave = l.material.startsWith('Papel') ? 'Papel/papelão' : l.material.startsWith('Plástico') ? 'Plástico' : l.material;
+      grupos[chave] = (grupos[chave] || 0) + l.kg;
+    });
+    const entradas = Object.entries(grupos).sort((a, b) => b[1] - a[1]);
+    const max = Math.max(...entradas.map(e => e[1]), 1);
+    document.getElementById('impact-bars').innerHTML = entradas.map(([label, kg]) =>
+      '<div class="bar-row"><div class="bl">' + label + '</div><div class="bar-track"><div class="bar-fill" style="width:' + (kg / max * 100).toFixed(0) + '%"></div></div><div class="bv">' + kg + ' kg</div></div>'
+    ).join('');
+  }
+
+  // ---------------- Init ----------------
+  loadState();
+  updateOnlineStatus();
+  renderFilters();
+  renderLotes();
+  renderMarketplace();
+  renderImpacto();
+</script>
+</body>
+</html>
