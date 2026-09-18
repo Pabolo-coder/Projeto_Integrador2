@@ -14,7 +14,6 @@ Este documento descreve os **requisitos funcionais** e **não funcionais** do si
 | RF02 | O sistema deve permitir o registro de coleta com geolocalização e tipo de material |
 | RF03 | O sistema deve gerar um QR code único para cada lote coletado |
 | RF04 | O sistema deve rastrear as etapas do material (coleta, triagem, venda, reciclagem) |
-| RF05 | O sistema deve emitir um certificado digital de reciclagem por lote |
 | RF06 | O sistema deve disponibilizar um marketplace para empresas comprarem créditos de reciclagem |
 | RF07 | O sistema deve exibir um painel de impacto ambiental por catador e por cooperativa |
 | RF08 | O sistema deve possuir um sistema de pontuação e recompensas para catadores |
