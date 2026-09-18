@@ -1,0 +1,15 @@
+## Release v1.0.0 · EcoLastro CTBJ 
+Versão inicial da interface de rastreamento digital de resíduos recicláveis do Colégio Técnico de Bom Jesus
+## Status dos Requisitos
+
+* RF02 (Coleta & GPS): Concluído. Formulário de peso, materiais e captura de localização via GPS pronto.
+* RF08 (Pontuação): Concluído. Painel de pontos (0 pts), nível semente e ranking estruturados na tela.
+* RNF02 (Modo Offline): Concluído. Banner de alerta ativo e persistência de dados locais configurada.
+* RNF03 (Segurança): Concluído. Controle de acesso por perfil (Catador, Cooperativa, Empresa) e máscaras de senha.
+* RF03, RF04, RF06, RF07 (Rastreamento, Marketplace e Impacto): Parcial/Estruturado. Telas e paginações sob demanda prontas, aguardando integração com a API.
+* RNF04 (Escalabilidade): Concluído. Arquitetura baseada em componentes React e preparada para Node.js + PostgreSQL.
+
+## Stack Utilizada
+
+* Front-end: React / React Native (Componentes reutilizáveis web/mobile)
+
